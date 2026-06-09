@@ -1,0 +1,41 @@
+# ------------------------------------------------------------------------
+# ARCHIVOS DE SISTEMA Y ESTADO DE TERRAFORM
+# ------------------------------------------------------------------------
+# Ignorar el directorio de trabajo local (caché de proveedores y módulos)
+.terraform/
+
+# Ignorar archivos de estado local (¡Contienen secretos en texto plano!)
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+
+# Ignorar archivos de configuración de CLI
+.terraformrc
+terraform.rc
+
+# ------------------------------------------------------------------------
+# VARIABLES Y PLANES (SECRETOS)
+# ------------------------------------------------------------------------
+# Ignorar archivos de variables (donde pones tus contraseñas/llaves reales)
+*.tfvars
+*.tfvars.json
+
+# Ignorar archivos de variables específicas de entorno
+*-env_vars.tfvars
+
+# Ignorar archivos de planes de ejecución de Terraform (pueden contener secretos)
+*.tfplan
+tfplan
+
+# ------------------------------------------------------------------------
+# CREDENCIALES Y LLAVES SENSIBLES
+# ------------------------------------------------------------------------
+*.pem
+*.key
+*.pub
+
+# ------------------------------------------------------------------------
+# LOGS Y OTROS
+# ------------------------------------------------------------------------
+crash.log
+*.log
