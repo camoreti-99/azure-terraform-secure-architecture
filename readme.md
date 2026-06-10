@@ -1,34 +1,52 @@
-# Azure Highly Available & Secure Infrastructure with Terraform
+# 🌐 Azure Highly Available & Secure Architecture with Terraform
 
-Este repositorio contiene la infraestructura como código (IaC) para desplegar un entorno web seguro, altamente disponible y escalable en Azure utilizando **Terraform**.
+![Terraform CI](https://github.com/camoreti-99/azure-terraform-secure-architecture/actions/workflows/terraform.yml/badge.svg)
 
-## 🏗️ Arquitectura Desplegada
+Este repositorio contiene la infraestructura como código (IaC) para desplegar un entorno web seguro, altamente disponible y escalable en Azure utilizando **Terraform**, estructurado bajo estándares profesionales de la industria (GitOps).
 
-El diseño sigue las mejores prácticas de arquitectura en la nube:
+---
 
-* **Aislamiento de Red:** Una VNet con tres subredes: `snet-privada` (para servidores de aplicaciones), `snet-publica` (para servicios expuestos) y `AzureBastionSubnet` (para gestión segura).
-* **Seguridad (Zero Trust):** Las máquinas virtuales no tienen IPs públicas. Todo el acceso administrativo (SSH) se realiza de forma segura mediante **Azure Bastion**.
-* **Alta Disponibilidad:** Un **Load Balancer Estándar** distribuye el tráfico HTTP (puerto 80) entre un número dinámico de máquinas virtuales Linux (Ubuntu 22.04 LTS).
-* **Control de Tráfico (NSG):** Reglas de seguridad estrictas que solo permiten tráfico web entrante y conexiones SSH exclusivamente originadas desde la subred de Bastion.
-* **Persistencia y Estado Remoto:** Configuración de un Storage Account para backups independientes y almacenamiento del estado de Terraform (`tfstate`) securizado en un backend remoto de Azure.
+## 🗺️ Arquitectura Desplegada
 
-## 🛠️ Componentes Técnicos
+El diseño sigue una topología Zero-Trust y de alta disponibilidad:
 
-* **Proveedor:** AzureRM (~> 4.0)
-* **Región por defecto:** Spain Central (`spaincentral`)
-* **Backend:** Azure Blob Storage (`sttfstatepro2026`)
-* **Cómputo:** `Standard_B1s` con discos Standard_LRS
+```mermaid
+graph TD
+    subgraph Azure Cloud
+        subgraph Resource Group: rg-laboratorio-maestro
+            subgraph VNet: vnet-laboratorio
+                subgraph AzureBastionSubnet
+                    Bastion[Azure Bastion Host]
+                end
 
-## 🚀 Cómo Desplegar este Laboratorio
+                subgraph snet-publica
+                    LB[Load Balancer Estándar]
+                end
 
-### Prerrequisitos
-1. Tener instalado [Terraform](https://www.terraform.io/downloads.html).
-2. Tener una cuenta de Azure y la [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) instalada.
-3. Un Azure Storage Account preconfigurado para el backend remoto (`sttfstatepro2026`).
+                subgraph snet-privada
+                    VM1[VM Linux 0]
+                    VM2[VM Linux 1]
+                    NSG[Network Security Group]
+                end
+            end
 
-### Pasos para la ejecución
+            subgraph Storage Layer
+                ST[Storage Account <br> HTTPS / TLS 1.2]
+            end
+        end
+    end
 
-1. **Clonar el repositorio:**
-   ```bash
-   git clone [https://github.com/camoreti-99/azure-terraform-secure-architecture.git](https://github.com/camoreti-99/azure-terraform-secure-architecture.git)
-   cd azure-terraform-secure-architecture
+    %% Flujos de tráfico
+    Internet_User((Usuario Internet)) -->|Puerto 80/HTTP| LB
+    LB -->|Balanceo de Carga| VM1
+    LB -->|Balanceo de Carga| VM2
+    
+    Admin((Administrador SysAdmin)) -->|SSH Seguro| Bastion
+    Bastion -->|Gestión interna| VM1
+    Bastion -->|Gestión interna| VM2
+
+    %% Estilos
+    style Bastion fill:#2b579a,stroke:#fff,stroke-width:2px,color:#fff
+    style LB fill:#00a300,stroke:#fff,stroke-width:2px,color:#fff
+    style NSG fill:#e3a21a,stroke:#fff,stroke-width:2px,color:#fff
+    style ST fill:#7e51a5,stroke:#fff,stroke-width:2px,color:#fff

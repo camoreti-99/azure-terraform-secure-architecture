@@ -1,0 +1,7 @@
+environment    = "dev"
+location       = "spaincentral"
+vm_count       = 2
+admin_username = "azureuser"
+
+# Pega aquí tu clave pública SSH real cuando vayas a desplegar en local
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
